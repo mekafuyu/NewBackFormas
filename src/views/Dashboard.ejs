@@ -174,7 +174,7 @@
 
                                 <div class="input-group mt-3 mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
-                                    src=".../../.../../assets/formas/triangulo.png" class="mini-icon" /></span>
+                                    src="../..assets/formas/triangulo.png" class="mini-icon" /></span>
                                   <input disabled value="<%=
                                     value.w1
                                   %>" id="<%=value.code%>-w1" type="number"  class="form-control"
@@ -183,7 +183,7 @@
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
-                                      src=".../../.../../assets/formas/quadrado.png" class="mini-icon" /></span>
+                                      src="../../assets/formas/quadrado.png" class="mini-icon" /></span>
                                   <input disabled value="<%=
                                     value.w2
                                   %>" id="<%=value.code%>-w2" type="number" class="form-control"
@@ -192,7 +192,7 @@
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
-                                      src=".../../.../../assets/formas/ellipse.png" class="mini-icon" /></span>
+                                      src="../../assets/formas/ellipse.png" class="mini-icon" /></span>
                                   <input disabled value="<%=
                                     value.w3
                                   %>" id="<%=value.code%>-w3" type="number" class="form-control"
@@ -201,7 +201,7 @@
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
-                                      src=".../../.../../assets/formas/star.png" class="mini-icon" /></span>
+                                      src="../../assets/formas/star.png" class="mini-icon" /></span>
                                   <input disabled value="<%=
                                     value.w4
                                   %>" id="<%=value.code%>-w4" type="number" class="form-control"
@@ -210,7 +210,7 @@
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
-                                      src=".../../.../../assets/formas/pentagono.png" class="mini-icon" /></span>
+                                      src="../../assets/formas/pentagono.png" class="mini-icon" /></span>
                                   <input disabled value="<%=
                                     value.w5
                                   %>" id="<%=value.code%>-w5" type="number" class="form-control"
@@ -267,26 +267,27 @@
               </div>
               <div class="modal-body">
                 <form action="post" name="form-update-info" id="form-update-info">
-                  <div class="input-group my-3">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Turma</span>
+                  <div class="input-group my-3" style="display: flex; flex-direction: column;">
+                    <span class="input-group-text" id="inputGroup-sizing-default" style="border-radius: 5px; background-color: #eef0f1; margin-top: 0.5em; margin-bottom: 0.2em;">Turma</span>
                     <input
                       type="text"
-                      placeholder="Nome da Turma"
                       class="form-control"
+                      placeholder="Nome da Turma"
                       name="turma"
+                      style="width: 100%;"
                     />
-                    <span class="input-group-text" id="inputGroup-sizing-default">Período</span>
-                     <select name="periodo">
+                    <span class="input-group-text" id="inputGroup-sizing-default" style="border-radius: 5px; background-color: #eef0f1; margin-top: 0.5em; margin-bottom: 0.2em;">Período</span>
+                     <select name="periodo" style="width: 100%; padding: 0.4em;">
                       <option>Manhã</option>
                       <option>Tarde</option>
                       <option>Noite</option>
                      </select>
-                    <span class="input-group-text" id="inputGroup-sizing-default">Data</span>
+                    <span class="input-group-text" id="inputGroup-sizing-default" style="border-radius: 5px; background-color: #eef0f1; margin-top: 0.5em; margin-bottom: 0.2em;">Data</span>
                     <input
                       type="date"
-                      placeholder="Nome da Turma"
                       class="form-control"
                       name="data"
+                      style="width: 100%;"
                     />
                   </div>
                 </form>
