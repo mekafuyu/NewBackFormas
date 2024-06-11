@@ -296,6 +296,10 @@ class gameController {
         }
     }
 
+    static async getHistory(req, res) {
+        return res.render("History");
+    }
+
     static async getFinish(req, res) {
         function formatTime(milliseconds) {
             const hours = Math.floor(milliseconds / 3600000);
