@@ -52,6 +52,7 @@ function toggleActivityStart() {
   if(hideBt) {
     document.getElementById("toggleButtonPause").classList.remove("d-none");
     document.getElementById("toggleButtonReset").classList.add("d-none");
+    document.getElementById("changeNameButton").classList.add("d-none");
     document.getElementById("changeWeightButton").classList.add("d-none");
     document.getElementById("changeTimeButton").classList.add("d-none");
     // document.getElementById("optionsButton").classList.add("d-none");
@@ -59,6 +60,7 @@ function toggleActivityStart() {
   } else {
     document.getElementById("toggleButtonPause").classList.add("d-none");
     document.getElementById("toggleButtonReset").classList.remove("d-none");
+    document.getElementById("changeNameButton").classList.remove("d-none");
     document.getElementById("changeWeightButton").classList.remove("d-none");
     document.getElementById("changeTimeButton").classList.remove("d-none");
     // document.getElementById("optionsButton").classList.remove("d-none");
