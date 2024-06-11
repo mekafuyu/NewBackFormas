@@ -37,6 +37,9 @@
           <img src="./assets/icons/bi.png" alt="" style="height: 30px; width: 30px; margin-right: 10px;">
         </a>
         
+        <button type="button" class="btn btn-danger me-3<%= startTime ? " d-none" : ""%>" data-bs-toggle="modal" data-bs-target="#changeNameModal" id="changeNameModal">
+          Alterar informações do processo
+        </button>
         <button type="button" class="btn btn-danger me-3<%= startTime ? " d-none" : ""%>" data-bs-toggle="modal" data-bs-target="#changeTimeModal" id="changeTimeButton">
           Alterar tempo de prova
         </button>
@@ -255,6 +258,52 @@
           </div>
         </div>
 
+        <div class="modal fade" id="changeNameModal" tabindex="-1" aria-labelledby="changeNameModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="changeNameModalLabel">Alterar Tempo de Prova</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form action="post" name="form-update-info" id="form-update-info">
+                  <div class="input-group my-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Turma</span>
+                    <input
+                      type="text"
+                      placeholder="Nome da Turma"
+                      class="form-control"
+                      name="turma"
+                    />
+                    <span class="input-group-text" id="inputGroup-sizing-default">Período</span>
+                     <select name="periodo">
+                      <option>Manhã</option>
+                      <option>Tarde</option>
+                      <option>Noite</option>
+                     </select>
+                    <!-- <input
+                      type="text"
+                      placeholder="Nome da Turma"
+                      class="form-control"
+                      name="periodo"
+                    /> -->
+                    <span class="input-group-text" id="inputGroup-sizing-default">Data</span>
+                    <input
+                      type="date"
+                      placeholder="Nome da Turma"
+                      class="form-control"
+                      name="data"
+                    />
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-light" id="saveInfo">Salvar Alterações</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Modal -->
         <div class="modal fade" id="changeWeigthModal" tabindex="-1" aria-labelledby="changeWeigthModalLabel" aria-hidden="true">
