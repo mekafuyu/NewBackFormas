@@ -261,27 +261,35 @@ class gameController {
     static async getNewGame(req, res) {
         const newGame = new Game({
             date: Date.now(),
-            period: Date.now().getHours() > 12 ? "tarde" : "manhã",
+            period: (new Date()).getHours() > 12 ? "tarde" : "manhã",
+            duration: 3600,
+            weights: {
+                w1: 0,
+                w2: 0,
+                w3: 0,
+                w4: 0,
+                w5: 0,
+            },
             players: [],
-            players: [],
-            createdAt: Date.now()
-        })
-
-        Game
+            createdAt: Date()
+        });
+        newGame.save();
+        res.send({id: newGame.id})
     }
 
     static async getDashboard(req, res) {
         // ARRUMAR
-        const { gameId } = req.params;
+        const { currGameId } = req.params;
     
         try {
-            const game = await Game.findById({ gameId });
+            console.log(currGameId)
+            const currGame = await Game.findById(currGameId);
     
-            if (!game) {
+            if (!currGame) {
                 return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
             }
 
-            res.render("Dashboard", { data: game.competitors, url: process.env.CURR_IP, startTime: game.date, currWeigths: {weights, testWeights}, showTimer, showTries, testDuration });
+            return res.render("Dashboard", { data: currGame.players, url: process.env.CURR_IP, startTime: currGame.date, currWeigths: {weights: currGame.weights, testWeights: {w1: 1, w2: 2, w3: 3}}, showTimer: true, showTries: true, testDuration: currGame.duration });
         } catch (error) {
             console.error(error);
             res.status(500).send("Erro no servidor");
