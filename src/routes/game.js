@@ -12,9 +12,10 @@ router
     .get('/competitors', gameController.getCompetitors)
     .get('/players', gameController.getPlayers)
     .get('/status/:code', gameController.getStatus)
+    .get('/newGame', gameController.getNewGame)
     .get('/game/:code', gameController.getGame)
     .get('/test', gameController.getTest)
-    .get('/dashboard/:gameId', gameController.getDashboard)
+    .get('/dashboard/:currGameId', gameController.getDashboard)
     .get('/finished', gameController.getFinish)
 
 module.exports = router;
