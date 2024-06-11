@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./variables.css" />
+  <link rel="stylesheet" href="./css/Dashboard.css" />
+  <link rel="stylesheet" href="./css/Game.css" />
+  <link rel="icon" href="./assets/Images/favicon.ico" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <title>Bosch</title>
+</head>
+
+<body>
+  <script>
+    var url = "<%= url %>";
+    var testDuration = "<%= testDuration %>";
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <header>
+    <div class="detail"></div>
+    <nav class="navbar navbar-expand-lg bg-body-primary shadow-sm mb-5">
+      <div class="container-fluid">
+        <a class="navbar-brand" id="title">
+          <img src="./assets/Images/logo.png" alt="IconeBosch" width="160px" height="36px" id="bosch_icon"
+          class="d-none d-md-flex" />
+        </a>
+        
+        <div class="d-flex justify-content-end align-items-center">
+        <button class="deco" onclick="saveActivity()">
+          <img src="./assets/icons/excel.png" alt="" style="height: 30px; width: 30px; margin-right: 10px;">
+        </button>
+        
+        <a href="https://app.powerbi.com/groups/me/reports/66756e3a-e631-4792-b9a3-d4eae8974ff6/ReportSection?ctid=0ae51e19-07c8-4e4b-bb6d-648ee58410f4&experience=power-bi" target="_blank">
+          <img src="./assets/icons/bi.png" alt="" style="height: 30px; width: 30px; margin-right: 10px;">
+        </a>
+        
+        <button type="button" class="btn btn-danger me-3<%= startTime ? " d-none" : ""%>" data-bs-toggle="modal" data-bs-target="#changeTimeModal" id="changeTimeButton">
+          Alterar tempo de prova
+        </button>
+        <button type="button" class="btn btn-danger me-3<%= startTime ? " d-none" : ""%>" data-bs-toggle="modal" data-bs-target="#changeWeigthModal" id="changeWeightButton">
+          Alterar pesos
+        </button>
+
+        <div class="dropdown"  id="optionsButton">
+          <button class="btn btn-light dropdown-toggle" type="button" id="optionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Opções
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="optionsDropdown">
+            <li>
+              <form id="options" class="px-4 py-3">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="timer" id="showTimer" <%= showTimer ? "checked" : "" %>>
+                      <label class="form-check-label" for="showTimer">
+                      Mostrar tempo
+                    </label>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="tries" id="showTries" <%= showTries ? "checked" : "" %>>
+                      <label class="form-check-label" for="showTries">
+                      Mostrar tentativas
+                    </label>
+                  </div>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+  <main>
+    <div class="infos">
+      <div class="timeCounter">
+        <ul class="list-group list-group-horizontal">
+          <li class="list-group-item">Tempo Restante</li>
+          <li class="list-group-item"><span id="tempoRestante">--:--:--</span></li>
+        </ul>
+        <button id="toggleButtonStart" type="button" class="btn btn-success mx-1" onclick="toggleActivityStart()">Iniciar Prova</button>
+        <button id="toggleButtonReset" type="button" class="btn btn-success mx-1" onclick="resetActivity()">Reiniciar Prova</button>
+        <button id="toggleButtonPause" type="button" class="d-none btn btn-warning mx-1" onclick="toggleActivityPause()">Pausar Prova</button>
+      </div>  
+
+      <div class="counters">
+        <ul class="list-group list-group-horizontal">
+          <li style="
+                border-color: var(--participantReady);
+                border-width: 2px 1px 2px 2px;
+              " class="list-group-item">
+            Concluído
+          </li>
+          <li style="
+                border-color: var(--participantReady);
+                border-width: 2px 2px 2px 1px; 
+              " class="list-group-item" id="finished">
+              <% var finished = Object.values(data).reduce((counter, { done }) => done ? counter += 1 : counter, 0); %>
+              <%= finished %>
+          </li>
+        </ul>
+        <ul class="list-group list-group-horizontal">
+          <li style="
+                border-color: var(--participantDoing);
+                border-width: 2px 1px 2px 2px;
+              " class="list-group-item">
+            Em andamento
+          </li>
+          <li style="
+                border-color: var(--participantDoing);
+                border-width: 2px 2px 2px 1px;
+              " class="list-group-item" id="ongoing">
+            <%= Object.keys(data).length - finished %>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row row-cols-3 row-cols-md-4 g-4" id="competitors">
+      <% for (const [key, value] of Object.entries(data)) { %>
+        <div class="col" id="<%=value.code%>">
+          <div class="card">
+            <div class="cardHeader <%=
+              value.done ? "greenBg" : "yellowBg"
+            %>" id="<%=value.code%>-bg">
+              <img class="image-bosch-pattern" src="<%=
+                value.done
+                  ? "./assets/icons/checkmark-frame.png"
+                  : "./assets/icons/alarm-clock.png"
+              %>" alt="Bosch color pattern" id="<%=value.code%>-icon" />
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item" id="<%=value.code%>-name">Nome: <%=
+              value.name
+            %>
+              </li>
+              <li class="list-group-item" id="<%=
+                value.code
+              %>-done">Status: <%=value.done ? "Concluído" : "Executando"%>
+              </li>
+              <li class="list-group-item" id="<%=
+                value.code
+              %>-time">Tempo: <%=value.time%>
+              </li>
+              <li class="list-group-item">
+                <button type="button" class="btn btn-light btn-resp" data-bs-toggle="modal"
+                  data-bs-target="#<%=value.code%>-modal">
+                  Respostas
+                </button>
+
+                <div class="modal fade" id="<%=value.code%>-modal" tabindex="-1" aria-labelledby="<%=value.code%>-Label"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header" style="background-color: rgb(247, 247, 247)">
+                        <h1 class="modal-title fs-5" id="<%=value.code%>-Label">
+                          Respostas
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body" style="
+                          background-color: rgb(255, 255, 255);
+                          border-radius: 0px 0px 10px 10px;
+                        ">
+                        <div class="card mb-5" style="border: 0cap">
+                          <div class="card-body card_connected_comp">
+                            <div class="card-body">
+                              <form action="post" name="form-res" id="form-res">
+
+                                <div class="input-group mt-3 mb-3">
+                                  <span class="input-group-text" id="inputGroup-sizing-default"><img
+                                    src="../../assets/formas/triangulo.png" class="mini-icon" /></span>
+                                  <input disabled value="<%=
+                                    value.w1
+                                  %>" id="<%=value.code%>-w1" type="number"  class="form-control"
+                                  aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                                </div>
+
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="inputGroup-sizing-default"><img
+                                      src="../../assets/formas/quadrado.png" class="mini-icon" /></span>
+                                  <input disabled value="<%=
+                                    value.w2
+                                  %>" id="<%=value.code%>-w2" type="number" class="form-control"
+                                  aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                                </div>
+
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="inputGroup-sizing-default"><img
+                                      src="../../assets/formas/ellipse.png" class="mini-icon" /></span>
+                                  <input disabled value="<%=
+                                    value.w3
+                                  %>" id="<%=value.code%>-w3" type="number" class="form-control"
+                                  aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                                </div>
+
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="inputGroup-sizing-default"><img
+                                      src="../../assets/formas/star.png" class="mini-icon" /></span>
+                                  <input disabled value="<%=
+                                    value.w4
+                                  %>" id="<%=value.code%>-w4" type="number" class="form-control"
+                                  aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                                </div>
+
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="inputGroup-sizing-default"><img
+                                      src="../../assets/formas/pentagono.png" class="mini-icon" /></span>
+                                  <input disabled value="<%=
+                                    value.w5
+                                  %>" id="<%=value.code%>-w5" type="number" class="form-control"
+                                  aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <%}%>
+        
+        <div class="modal fade" id="changeTimeModal" tabindex="-1" aria-labelledby="changeTimeModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="changeTimeModalLabel">Alterar Tempo de Prova</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form action="post" name="form-update-time" id="form-update-time">
+                  <div class="input-group my-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Tempo em Segundos</span>
+                    <input
+                      type="number"
+                      value="<%= testDuration %>"
+                      class="form-control"
+                      name="time"
+                    />
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-light" id="saveTime">Salvar Alterações</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="changeWeigthModal" tabindex="-1" aria-labelledby="changeWeigthModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="changeWeigthModalLabel">Alterar Pesos</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true" style="color: black;">Game</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" style="color: black;">Teste</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                    <form action="post" name="form-update-game" id="form-update-game">
+                      <div class="input-group my-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default" style="color: red;">Fixo</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.weights[2] %>"
+                          class="form-control"
+                          name="w1"
+                        />
+                      </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">1</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.weights[0] %>"
+                          class="form-control"
+                          name="w2"
+                        />
+                      </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">2</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.weights[1] %>"
+                          class="form-control"
+                          name="w3"
+                        />
+                      </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">3</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.weights[3] %>"
+                          class="form-control"
+                          name="w4"
+                        />
+                      </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">4</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.weights[4] %>"
+                          class="form-control"
+                          name="w5"
+                        />
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                    <form action="post" name="form-update-test" id="form-update-test">
+                      <div class="input-group my-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default" style="color: red;">Fixo</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.testWeights[1] %>"
+                          class="form-control"
+                          name="w1"
+                        />
+                      </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">1</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.testWeights[0] %>"
+                          class="form-control"
+                          name="w2"
+                        />
+                      </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">2</span>
+                        <input
+                          type="number"
+                          value="<%= currWeigths.testWeights[2] %>"
+                          class="form-control"
+                          name="w3"
+                        />
+                      </div>
+                    </form>
+                  </div>
+                </div>
+               
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-light" id="saveChanges">Salvar Alterações</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        
+    </div>
+  </main>
+
+  <footer></footer>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="./js/Dashboard.js"></script>
+
+</html>
