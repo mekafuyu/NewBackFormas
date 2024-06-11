@@ -16,6 +16,7 @@ router
     .get('/game/:code', gameController.getGame)
     .get('/test', gameController.getTest)
     .get('/dashboard/:currGameId', gameController.getDashboard)
+    .get('/history', gameController.getHistory)
     .get('/finished', gameController.getFinish)
 
 module.exports = router;
