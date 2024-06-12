@@ -15,7 +15,8 @@ router
     .get('/newGame', gameController.getNewGame)
     .get('/game/:code', gameController.getGame)
     .get('/test', gameController.getTest)
-    .get('/dashboard/:currGameId', gameController.getDashboard)
+    .get('/dashboard', gameController.getSelectGame)
+    .get('/dashboard/:code', gameController.getDashboard)
     .get('/history', gameController.getHistory)
     .get('/finished', gameController.getFinish)
 

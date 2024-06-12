@@ -1,3 +1,6 @@
+const Player = require("../model/player");
+const Game = require("../model/game")
+
 let startTime = null;
 let timer;
 let startPause;
@@ -6,9 +9,27 @@ var finished = false;
 
 class timerController {
     static async postStartTimer(req, res) {
-        if (timer) {
-            return res.send({ startTime: startTime, message: "O cronômetro já está em execução." });
+        const { currGameId } = req.params;
+    
+        try {
+            console.log(currGameId)
+            const currGame = await Game.findById(currGameId);
+    
+            if (!currGame) {
+                return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
+            }
+            
+            if (currGame.startTime) {
+                return res.send({ startTime: currGame.startTime, message: "O cronômetro já está em execução." });
+            }
+        
+        
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Erro no servidor");
         }
+        
+        
 
         startTime = Date.now();
         reset = false;

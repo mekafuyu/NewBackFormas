@@ -260,7 +260,8 @@ class gameController {
 
     static async getNewGame(req, res) {
         const newGame = new Game({
-            date: Date.now(),
+            code: await generate(),
+            startTime: null,
             period: (new Date()).getHours() > 12 ? "tarde" : "manhã",
             duration: 3600,
             weights: {
@@ -271,20 +272,40 @@ class gameController {
                 w5: 0,
             },
             players: [],
-            createdAt: Date()
+            createdAt: new Date()
         });
-        newGame.save();
-        res.send({id: newGame.id})
+
+        try {
+            await newGame.save();
+            return res.send({code: newGame.code})
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something failed while creating a game' });
+        }
+    }
+
+    static async getSelectGame(req, res) {    
+        try {
+            const games = await Game.find();
+
+            if (!games) {
+                return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
+            }
+
+            return res.render("SelectProccess", { data: games, url: process.env.CURR_IP});
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Erro no servidor");
+        }
     }
 
     static async getDashboard(req, res) {
         // ARRUMAR
-        const { currGameId } = req.params;
+        const { code } = req.params;
     
         try {
-            console.log(currGameId)
-            const currGame = await Game.findById(currGameId);
-    
+            const currGame = await Game.findOne({ code });
+
             if (!currGame) {
                 return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
             }
@@ -297,7 +318,18 @@ class gameController {
     }
 
     static async getHistory(req, res) {
-        return res.render("History");
+        try {
+            const games = await Game.find();
+
+            if (!games) {
+                return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
+            }
+
+            return res.render("History", { data: games, url: process.env.CURR_IP});
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Erro no servidor");
+        }
     }
 
     static async getFinish(req, res) {

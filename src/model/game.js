@@ -2,9 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const gameSchema = new Schema({
-    date: {
-        type: Date,
-        required: true
+    code: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    startTime: {
+        type: Date
     },
     period: {
         type: String,
@@ -13,6 +17,11 @@ const gameSchema = new Schema({
     },
     duration: {
         type: Number,
+        required: true
+    },
+    finished: {
+        type: Boolean,
+        default: false,
         required: true
     },
     weights: {

@@ -128,7 +128,7 @@ function atualizarTempoRestante() {
 
 function startTimer() {
   $.ajax({
-    url: `${url}/start-timer`,
+    url: `${url}/timer/start-timer`,
     type: "POST",
     success: function (response) {
       startTime = response.startTime; 
@@ -142,7 +142,7 @@ function startTimer() {
 
 function pauseTimer() {
   $.ajax({
-    url: `${url}/pause-timer`,
+    url: `${url}/timer/pause-timer`,
     type: "GET",
     success: function (response) {
       pauseTime = response.pauseTime;
