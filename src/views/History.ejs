@@ -50,7 +50,7 @@
                         <h4 class="card-title">Processo: <%=value.code%></h4>
                         <h6 class="card-text mb-2">Data: <%=value.createdAt.toLocaleDateString("pt-br")%></h6>
                         <div class="card_btn_area mt-4">
-                            <button type="button" class="card-btn editar" onclick="verDetalhes()">Ver
+                            <button type="button" class="card-btn editar" onclick="verDetalhes(this)">Ver
                                 Detalhes</button>
                             <button type="button" class="card-btn apagar">Baixar</button>
                             <a href="./dashboard/<%= value.code %>" class="card-btn abrir">Abrir</a>

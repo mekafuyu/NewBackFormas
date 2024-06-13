@@ -20,7 +20,8 @@
     "mongodb": "^6.7.0",
     "mongoose": "^8.4.1",
     "morgan": "^1.10.0",
-    "packagename": "^2.0.1"
+    "packagename": "^2.0.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.3"

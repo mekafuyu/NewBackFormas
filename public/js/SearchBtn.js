@@ -6,7 +6,7 @@ function filterBySearch(){
     for (let i = 0; i < cardprocess.length; i++){
         const card = cardprocess[i];
         const cardContent = card.textContent || card.innerText;
-        const words = cardContent.toLowerCase.split(/\s+/);
+        const words = cardContent.toLowerCase().split(/\s+/);
 
         let match = false;
         for (let j = 0; j < words.length; j++) {
