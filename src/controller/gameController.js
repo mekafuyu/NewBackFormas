@@ -1,5 +1,5 @@
 const { saveExcel, generate, shuffle } = require('../utils');
-const Player = require("../model/player");
+const { Player } = require("../model/player");
 const Game = require("../model/game")
 competitors = {}
 const weights = [100, 200, 300, 500, 800];
@@ -8,7 +8,7 @@ const startTime = Date.now(); //Retirar isso
 
 class gameController {
     static async postReady(req, res) {
-        const { name, dataNasc, w1, w2, w3, w4, w5 } = req.body;
+        const { codigo, name, dataNasc, w1, w2, w3, w4, w5 } = req.body;
         if (!dataNasc) return res.status(400).send("Sem data de nascimento");
 
         let accessed = false;
@@ -39,7 +39,7 @@ class gameController {
 
         let code = await generate();
 
-        competitors[code] = new Player({
+        let newPlayer = new Player({
             name, dataNasc, done, time,
             realScore, score, tentativas,
             pieces, code, accessed,
@@ -48,7 +48,14 @@ class gameController {
         console.log("Novo jogador:", code, name, realScore);
 
         try {
-            await competitors[code].save();
+            const game = await Game.findOne({code: codigo})
+
+            if(!game)
+                return res.status(404).send({ message: "Jogo não encontrado" });
+
+            game.players.set(newPlayer.code, newPlayer)
+            await game.save();
+
             return res.status(201).send({ message: 'Player registered successfully', code: code });
         } catch (error) {
             console.log(error);
@@ -204,17 +211,18 @@ class gameController {
         }
     }
 
-    // Arrumar
-    static async getCompetitors(req, res) {
-        res.send(competitors);
-    }
-
     static async getPlayers(req, res) {
+        const { code } = req.params;
+
         try {
-            const players = await Player.find();
-            return res.status(200).send({ players });
+            const game = await Game.findOne({code});
+
+            if(!game)
+                return res.status(404).send({ message: "Jogo não encontrado" });
+                
+            return res.status(200).send(game.players);
         } catch (error) {
-            return res.status(404).send({ error: 'Players not found!' });
+            return res.status(500).send({ error: 'Error finding players' });
         }
     }
 
@@ -310,7 +318,11 @@ class gameController {
                 return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
             }
 
-            return res.render("Dashboard", { data: currGame.players, url: process.env.CURR_IP, startTime: currGame.date, currWeigths: {weights: currGame.weights, testWeights: {w1: 1, w2: 2, w3: 3}}, showTimer: true, showTries: true, testDuration: currGame.duration });
+            currGame.players.forEach((value, key, map) => {
+                console.log(value)
+            })
+
+            return res.render("Dashboard", { gameCode: code, data: currGame.players, url: process.env.CURR_IP, startTime: currGame.date, currWeigths: {weights: currGame.weights, testWeights: {w1: 1, w2: 2, w3: 3}}, showTimer: true, showTries: true, testDuration: currGame.duration });
         } catch (error) {
             console.error(error);
             res.status(500).send("Erro no servidor");

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { playerSchema } = require("./player")
 
 const gameSchema = new Schema({
     code: {
@@ -46,10 +47,10 @@ const gameSchema = new Schema({
             default: 0
         }
     },
-    players: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Player'
-    }],
+    players: {
+        type: Map,
+        of: playerSchema
+    },
     createdAt: {
         type: Date,
         default: Date.now

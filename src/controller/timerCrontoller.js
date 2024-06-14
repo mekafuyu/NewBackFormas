@@ -1,4 +1,4 @@
-const Player = require("../model/player");
+const { Player } = require("../model/player");
 const Game = require("../model/game")
 
 let startTime = null;

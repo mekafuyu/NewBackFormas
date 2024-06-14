@@ -21,7 +21,7 @@ const buttonReset = $("#toggleButtonReset")
 function resetActivity() {
   if (!isSaved) {
     alert("Por favor, salve suas alterações antes de resetar.");
-    return; 
+    return;
   }
 
   if (confirmReset == 0)
@@ -30,7 +30,7 @@ function resetActivity() {
     buttonReset.addClass("btn-danger").removeClass("btn-warning")
 
 
-  if (confirmReset < 2){
+  if (confirmReset < 2) {
     confirmReset++
     return
   }
@@ -49,7 +49,7 @@ function resetActivity() {
 
 function toggleActivityStart() {
   var button = document.getElementById("toggleButtonStart");
-  if(hideBt) {
+  if (hideBt) {
     document.getElementById("toggleButtonPause").classList.remove("d-none");
     document.getElementById("toggleButtonReset").classList.add("d-none");
     document.getElementById("changeNameButton").classList.add("d-none");
@@ -68,15 +68,15 @@ function toggleActivityStart() {
   }
 
   if (button.classList.contains("btn-success")) {
-      button.classList.remove("btn-success");
-      button.classList.add("btn-danger");
-      button.innerHTML = "Finalizar Prova";
-      startTimer();
+    button.classList.remove("btn-success");
+    button.classList.add("btn-danger");
+    button.innerHTML = "Finalizar Prova";
+    startTimer();
   } else {
-      button.classList.remove("btn-danger");
-      button.classList.add("btn-success");
-      button.innerHTML = "Iniciar Prova";
-      finishActivity();
+    button.classList.remove("btn-danger");
+    button.classList.add("btn-success");
+    button.innerHTML = "Iniciar Prova";
+    finishActivity();
   }
 }
 
@@ -85,15 +85,15 @@ function toggleActivityPause() {
   pauseTimer()
 
   if (button.classList.contains("btn-warning")) {
-      button.classList.remove("btn-warning");
-      button.classList.add("btn-primary");
-      button.innerHTML = "Retomar Prova";
-      paused = true
-    } else {
-      button.classList.remove("btn-primary");
-      button.classList.add("btn-warning");
-      button.innerHTML = "Pausar Prova";
-      paused = false
+    button.classList.remove("btn-warning");
+    button.classList.add("btn-primary");
+    button.innerHTML = "Retomar Prova";
+    paused = true
+  } else {
+    button.classList.remove("btn-primary");
+    button.classList.add("btn-warning");
+    button.innerHTML = "Pausar Prova";
+    paused = false
   }
 }
 
@@ -111,7 +111,7 @@ function atualizarTempoRestante() {
       button.innerHTML = "Finalizar Prova";
       document.getElementById("toggleButtonPause").classList.remove("d-none");
 
-      if(response.paused){
+      if (response.paused) {
         button = document.getElementById("toggleButtonPause");
         button.classList.remove("d-none");
         button.classList.remove("btn-success");
@@ -131,7 +131,7 @@ function startTimer() {
     url: `${url}/timer/start-timer`,
     type: "POST",
     success: function (response) {
-      startTime = response.startTime; 
+      startTime = response.startTime;
       setInterval(atualizarTempoRestanteFrontend, 1000);
     },
     error: function (xhr, status, error) {
@@ -201,37 +201,37 @@ function saveActivity() {
 
 setInterval(() => {
   $.ajax({
-    url: `${url}/competitors`,
+    url: `${url}/game/getPlayers/${gameCode}`,
     type: "GET",
     success: function (response) {
       var s = Date.now();
 
-      if (Object.keys(response).length > 0) {
-        finished = Object.values(response).reduce(
+      if (response.size > 0) {
+        finished = Array.from(response.values()).reduce(
           (counter, { done }) => (done === true ? (counter += 1) : counter),
           0
         );
-        ongoing = Object.keys(response).length - finished;
+        ongoing = response.size - finished;
 
         ongoingDiv.text(ongoing);
         finishedDiv.text(finished);
 
-        for (const [key, value] of Object.entries(response))  {
+        data.forEach((value, key, map) => {
           var hasChildWithId =
             competitorsDiv.find("#" + value.code).length > 0;
           if (hasChildWithId) {
             value.done
               ? $(`#${value.code}-bg`)
-                  .addClass("greenBg")
-                  .removeClass("yellowBg")
+                .addClass("greenBg")
+                .removeClass("yellowBg")
               : $(`#${value.code}-bg`)
-                  .addClass("yellowBg")
-                  .removeClass("greenBg");
+                .addClass("yellowBg")
+                .removeClass("greenBg");
             $(`#${value.code}-icon`).attr(
               "src",
               value.done
-                ? "./assets/icons/checkmark-frame.png"
-                : "./assets/icons/alarm-clock.png"
+                ? "../../assets/icons/checkmark-frame.png"
+                : "../../assets/icons/alarm-clock.png"
             );
             $(`#${value.code}-done`).text(
               `Status: ${value.done ? "Concluído" : "Executando"}`
@@ -246,26 +246,21 @@ setInterval(() => {
             competitorsDiv.append(`
           <div class="col" id="${value.code}">
           <div class="card">
-            <div class="cardHeader ${
-              value.done ? "greenBg" : "yellowBg"
-            }" id="${value.code}-bg">
-              <img class="image-bosch-pattern" src="${
-                value.done
-                  ? "./assets/icons/checkmark-frame.png"
-                  : "./assets/icons/alarm-clock.png"
+            <div class="cardHeader ${value.done ? "greenBg" : "yellowBg"
+              }" id="${value.code}-bg">
+              <img class="image-bosch-pattern" src="${value.done
+                ? "../../assets/icons/checkmark-frame.png"
+                : "../../assets/icons/alarm-clock.png"
               }" alt="Bosch color pattern" id="${value.code}-icon" />
             </div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item" id="${value.code}-name">Nome: ${
-              value.name
-            }
+              <li class="list-group-item" id="${value.code}-name">Nome: ${value.name
+              }
               </li>
-              <li class="list-group-item" id="${
-                value.code
+              <li class="list-group-item" id="${value.code
               }-done">Status: ${value.done ? "Concluído" : "Executando"}
               </li>
-              <li class="list-group-item" id="${
-                value.code
+              <li class="list-group-item" id="${value.code
               }-time">Tempo: ${value.time}
               </li>
               <li class="list-group-item">
@@ -274,9 +269,8 @@ setInterval(() => {
                   Respostas
                 </button>
 
-                <div class="modal fade" id="${
-                  value.code
-                }-modal" tabindex="-1" aria-labelledby="${value.code}-Label"
+                <div class="modal fade" id="${value.code
+              }-modal" tabindex="-1" aria-labelledby="${value.code}-Label"
                   aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -298,55 +292,45 @@ setInterval(() => {
                                 <div class="input-group mt-3 mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
                                     src="../../assets/formas/triangulo.png" class="mini-icon" /></span>
-                                  <input disabled value="${
-                                    value.w1
-                                  }" id="${
-              value.code
-            }-w1" type="number"  class="form-control"
+                                  <input disabled value="${value.w1
+              }" id="${value.code
+              }-w1" type="number"  class="form-control"
                                   aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                 </div>
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
                                       src="../../assets/formas/quadrado.png" class="mini-icon" /></span>
-                                  <input disabled value="${
-                                    value.w2
-                                  }" id="${
-              value.code
-            }-w2" type="number" class="form-control"
+                                  <input disabled value="${value.w2
+              }" id="${value.code
+              }-w2" type="number" class="form-control"
                                   aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                 </div>
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
                                       src="../../assets/formas/ellipse.png" class="mini-icon" /></span>
-                                  <input disabled value="${
-                                    value.w3
-                                  }" id="${
-              value.code
-            }-w3" type="number" class="form-control"
+                                  <input disabled value="${value.w3
+              }" id="${value.code
+              }-w3" type="number" class="form-control"
                                   aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                 </div>
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
                                       src="../../assets/formas/star.png" class="mini-icon" /></span>
-                                  <input disabled value="${
-                                    value.w4
-                                  }" id="${
-              value.code
-            }-w4" type="number" class="form-control"
+                                  <input disabled value="${value.w4
+              }" id="${value.code
+              }-w4" type="number" class="form-control"
                                   aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                 </div>
 
                                 <div class="input-group mb-3">
                                   <span class="input-group-text" id="inputGroup-sizing-default"><img
                                       src="../../assets/formas/pentagono.png" class="mini-icon" /></span>
-                                  <input disabled value="${
-                                    value.w5
-                                  }" id="${
-              value.code
-            }-w5" type="number" class="form-control"
+                                  <input disabled value="${value.w5
+              }" id="${value.code
+              }-w5" type="number" class="form-control"
                                   aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                 </div>
                               </form>
@@ -363,7 +347,7 @@ setInterval(() => {
         </div>
           `);
           }
-        }
+        })
       }
     },
     error: function (xhr, status, error) {
@@ -373,7 +357,7 @@ setInterval(() => {
 }, 5000);
 
 function atualizarTempoRestanteFrontend() {
-  if(paused)
+  if (paused)
     return
   const elapsedTime = (Date.now() - startTime) - pauseTime;
 
@@ -395,14 +379,14 @@ function atualizarTempoRestanteFrontend() {
   $("#tempoRestante").text(tempoFormatado);
 }
 
-$("#saveChanges").on('click', function() {
+$("#saveChanges").on('click', function () {
 
   $.ajax({
     url: `${url}/set-weigths/game`,
     type: "POST",
     data: $("#form-update-game").serialize(),
     success: function (response) {
-      
+
     },
     error: function (xhr, status, error) {
       console.log("Error:", error);
@@ -414,7 +398,7 @@ $("#saveChanges").on('click', function() {
     type: "POST",
     data: $("#form-update-test").serialize(),
     success: function (response) {
-      
+
     },
     error: function (xhr, status, error) {
       console.log("Error:", error);
@@ -422,7 +406,7 @@ $("#saveChanges").on('click', function() {
   });
 })
 
-$("#saveTime").on('click', function() {
+$("#saveTime").on('click', function () {
 
   $.ajax({
     url: `${url}/set-time`,
@@ -437,13 +421,13 @@ $("#saveTime").on('click', function() {
   });
 })
 
-$("#options input").on('click', function() {
+$("#options input").on('click', function () {
   $.ajax({
     url: `${url}/setOptions`,
     type: "POST",
     data: $("#options").serialize(),
     success: function (response) {
-      
+
     },
     error: function (xhr, status, error) {
       console.log("Error:", error);

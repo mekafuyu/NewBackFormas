@@ -37,7 +37,7 @@ app.use(express.static("public"));
 require("./startup/routes")(app);
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Acesse: http://localhost:${port}/game/dashboard`));
+app.listen(port, () => console.log(`Acesse: http://localhost:${port}/game/history`));
 
 //rntmendes11
 //goaO0uOkFhQkBkUo
