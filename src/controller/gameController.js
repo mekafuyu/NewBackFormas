@@ -331,7 +331,7 @@ class gameController {
                 console.log(value)
             })
 
-            return res.render("Dashboard", { gameCode: code, data: currGame.players, url: process.env.CURR_IP, startTime: currGame.date, currWeigths: {weights: currGame.weights, testWeights: {w1: 1, w2: 2, w3: 3}}, showTimer: true, showTries: true, testDuration: currGame.duration });
+            return res.render("Dashboard", { gameCode: code, data: currGame.players, url: process.env.CURR_IP, startTime: currGame.startTime, currWeigths: {weights: currGame.weights, testWeights: {w1: 1, w2: 2, w3: 3}}, showTimer: true, showTries: true, testDuration: currGame.duration });
         } catch (error) {
             console.error(error);
             res.status(500).send("Erro no servidor");

@@ -101,11 +101,11 @@ function toggleActivityPause() {
 
 function atualizarTempoRestante() {
   $.ajax({
-    url: `${url}/check-timer`,
+    url: `${url}/timer/check/${code}`,
     type: "GET",
     success: function (response) {
       $("#tempoRestante").text(response.leftTime);
-      startTime = response.startTime
+      startTime = new Date(response.startTime)
       setInterval(atualizarTempoRestanteFrontend, 1000)
       var button = document.getElementById("toggleButtonStart");
       button.classList.remove("btn-success");
@@ -362,7 +362,7 @@ setInterval(() => {
 function atualizarTempoRestanteFrontend() {
   if (paused)
     return
-  const elapsedTime = (Date.now() - startTime) - pauseTime;
+  const elapsedTime = Date.now() - new Date(startTime);// - pauseTime;
 
   const remainingTime = Math.max(0, (testDuration * 1000) - elapsedTime);
 
@@ -378,7 +378,7 @@ function atualizarTempoRestanteFrontend() {
   const tempoFormatado = `${horas.toString().padStart(2, "0")}:${minutos
     .toString()
     .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
-
+  console.log(tempoFormatado)
   $("#tempoRestante").text(tempoFormatado);
 }
 

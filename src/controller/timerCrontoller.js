@@ -22,7 +22,7 @@ class timerController {
                 return res.send({ startTime: currGame.startTime, message: "O cronômetro já está em execução." });
             }
         
-            currGame.startTime = Date.now();
+            currGame.startTime = new Date();
     
             let timer = setTimeout(() => {
                 console.log("Tempo encerrado.");
@@ -53,26 +53,40 @@ class timerController {
     }
 
     static async getCheckTimer(req, res) {
-        if (!timer) {
-            return res.status(409).send("O cronômetro não está em execução.");
+        const { code } = req.params;
+    
+        try {
+            const currGame = await Game.findOne({code});
+    
+            if (!currGame) {
+                return res.status(404).send({ title: "Não encontrado", message: "Jogo não encontrado" });
+            }
+
+            if (!currGame.startTime) {
+                return res.status(409).send("O cronômetro não está em execução.");
+            }
+
+            var elapsedTime = (Date.now() - currGame.startTime)// - pauseTime;
+            // if (startPause) {
+            //     elapsedTime -= Date.now(); // - startPause;
+            // }
+    
+            const remainingTime = Math.max(0, (currGame.duration * 1000) - elapsedTime);
+
+            const hours = Math.floor(remainingTime / 3600000);
+            const minutes = Math.floor((remainingTime % 3600000) / 60000);
+            const seconds = Math.floor((remainingTime % 60000) / 1000);
+    
+            return res.send({
+                startTime: currGame.startTime,
+                leftTime: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+                //paused: !!startPause
+            });
+        
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Erro no servidor");
         }
-
-        var elapsedTime = (Date.now() - startTime) - pauseTime;
-        if (startPause) {
-            elapsedTime -= Date.now() - startPause;
-        }
-
-        const remainingTime = Math.max(0, (testDuration * 1000) - elapsedTime);
-
-        const hours = Math.floor(remainingTime / 3600000);
-        const minutes = Math.floor((remainingTime % 3600000) / 60000);
-        const seconds = Math.floor((remainingTime % 60000) / 1000);
-
-        return res.send({
-            startTime: startTime,
-            leftTime: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
-            paused: !!startPause
-        });
     }
 
     static async getFinished(req, res) {

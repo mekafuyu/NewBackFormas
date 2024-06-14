@@ -5,7 +5,7 @@ const timerController = require('../controller/timerCrontoller');
 router
     .post('/start-timer/:code', timerController.postStartTimer)
     .get('/pause', timerController.getPauseTimer)
-    .get('/check', timerController.getCheckTimer)
+    .get('/check/:code', timerController.getCheckTimer)
     .get('/finish', timerController.getFinished)
     .post('/reset', timerController.postReset)
     .post('/setOptions', timerController.postSetOptions)
