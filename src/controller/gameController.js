@@ -56,7 +56,7 @@ class gameController {
             game.players.set(newPlayer.code, newPlayer)
             await game.save();
 
-            return res.status(201).send({ message: 'Player registered successfully', code: code });
+            return res.status(201).send({ message: 'Player registered successfully', status: game.startTime ? true : false, code: code });
         } catch (error) {
             console.log(error);
             return res.status(500).send({ message: 'Something failed while creating a player' });
@@ -228,11 +228,21 @@ class gameController {
 
     // Arrumar
     static async getStatus(req, res) {
-        const { code } = req.params;
-        var comp = competitors[code];
-        if (!comp) return res.status(404).send({ success: false, error: { message: "Competidor não encontrado." } });
+        const { gCode, pCode } = req.params;
 
-        res.send({ finished: finished, startTime: showTimer ? startTime : null, tries: showTries ? comp.tentativas : null, reset });
+        try {
+            const game = await Game.findOne({ code: gCode });
+
+            if (!game) {
+                return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
+            }
+            const player = game.players.get("")
+
+            res.send({ finished: game.finished, started: game.startTime ? true : false, startTime: game.showTimer ? game.startTime : null, tries: game.showTries ? player.tentativas : null });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Erro no servidor");
+        }
     }
 
     static async getGame(req, res) {
@@ -259,7 +269,6 @@ class gameController {
             res.status(500).send("Erro no servidor");
         }
     }
-
 
     static async getTest(req, res) {
         // Implementação do método getTest

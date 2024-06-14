@@ -13,6 +13,8 @@ var confirmReset = 0
 var modals = {};
 var isSaved = false;
 let toggleCalled = false;
+let urlpath = window.location.pathname.split("/")
+let code = urlpath[urlpath.length - 1]
 // myModal.addEventListener("shown.bs.modal", () => {
 //   myInput.focus();
 // });
@@ -127,8 +129,9 @@ function atualizarTempoRestante() {
 }
 
 function startTimer() {
+
   $.ajax({
-    url: `${url}/timer/start-timer`,
+    url: `${url}/timer/start-timer/${code}`,
     type: "POST",
     success: function (response) {
       startTime = response.startTime;

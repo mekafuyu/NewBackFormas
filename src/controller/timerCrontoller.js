@@ -5,44 +5,40 @@ let startTime = null;
 let timer;
 let startPause;
 let pauseTime = 0;
-var finished = false;
 
 class timerController {
     static async postStartTimer(req, res) {
-        const { currGameId } = req.params;
+        const { code } = req.params;
     
         try {
-            console.log(currGameId)
-            const currGame = await Game.findById(currGameId);
+            console.log(code)
+            const currGame = await Game.findOne({code});
     
             if (!currGame) {
-                return res.render("Error", { title: "Não encontrado", message: "Jogo não encontrado" });
+                return res.status(404).send({ title: "Não encontrado", message: "Jogo não encontrado" });
             }
             
             if (currGame.startTime) {
                 return res.send({ startTime: currGame.startTime, message: "O cronômetro já está em execução." });
             }
         
+            currGame.startTime = Date.now();
+    
+            let timer = setTimeout(() => {
+                console.log("Tempo encerrado.");
+                currGame.finished = true;
+                saveExcel();
+                clearTimeout(timer);
+            }, currGame.duration * 1000);
+
+            await currGame.save()
+
+            res.send({startTime: currGame.startTime, message: `Cronômetro de ${currGame.duration/3600} hora iniciado.` });
         
         } catch (error) {
             console.error(error);
             res.status(500).send("Erro no servidor");
         }
-        
-        
-
-        startTime = Date.now();
-        reset = false;
-
-        timer = setTimeout(() => {
-            console.log("Tempo encerrado.");
-            finished = true;
-            saveExcel();
-            clearTimeout(timer);
-        }, testDuration * 1000);
-
-        started = true;
-        res.send({ startTime: startTime, message: "Cronômetro de 1 hora iniciado." });
     }
 
     static async getPauseTimer(req, res) {

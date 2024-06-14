@@ -10,7 +10,7 @@ router
     .post('/test-scales', gameController.postTestScales)
     .post('/scales/:code', gameController.postScales)
     .get('/getplayers/:code', gameController.getPlayers)
-    .get('/status/:code', gameController.getStatus)
+    .get('/getstatus/:gCode/:pCode', gameController.getStatus)
     .get('/newGame', gameController.getNewGame)
     .get('/game/:code', gameController.getGame)
     .get('/test', gameController.getTest)

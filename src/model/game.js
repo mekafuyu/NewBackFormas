@@ -11,6 +11,14 @@ const gameSchema = new Schema({
     startTime: {
         type: Date
     },
+    showTimer: {
+        type: Boolean,
+        default: false
+    },
+    showTries: {
+        type: Boolean,
+        default: false
+    },
     period: {
         type: String,
         enum: ['manhã', 'tarde'], 

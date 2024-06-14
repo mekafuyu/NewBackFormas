@@ -3,7 +3,7 @@ const router = express.Router();
 const timerController = require('../controller/timerCrontoller');
 
 router
-    .post('/start', timerController.postStartTimer)
+    .post('/start-timer/:code', timerController.postStartTimer)
     .get('/pause', timerController.getPauseTimer)
     .get('/check', timerController.getCheckTimer)
     .get('/finish', timerController.getFinished)
