@@ -1,72 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
-    fetchExcelFile(); // verifica se tem algum arquivo inicial
+  fetchExcelFile(); // verifica se tem algum arquivo inicial
 });
 
-function verDetalhes(IdProcesso) {
-    const excelFilePath = `./${IdProcesso}`; 
+function verDetalhes(button) {
+const card = button.closest('.card');
+const idProcesso = card.getAttribute('card-title');
+const excelFilePath = `/files/${idProcesso}.xlsx`;
 
-    fetchExcelFile(excelFilePath);
+fetchExcelFile(excelFilePath);
 }
 
 function fetchExcelFile(filePath) {
-    fetch(filePath)
-        .then(response => response.arrayBuffer())
-        .then(data => {
-            const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-            displayExcelPreview(jsonData);
-        })
-        .catch(error => console.error('Error fetching Excel file:', error));
+$.ajax({
+  url: `${url}/previewExcel/${filePath}`,
+  type: "GET",
+  xhrFields: {
+    responseType: 'arraybuffer'
+  },
+  success: function (data) {
+    const workbook = XLSX.read(data, { type: 'array' }); //lê o conteúdo do excel como um array
+    const firstSheetName = workbook.SheetNames[0]; //pega o primeiro nome da planilha
+    const worksheet = workbook.Sheets[firstSheetName]; //acessa a primeira planilha q tem esse nome
+    const jsonData = XLSX.utils.sheet_to_json(worksheet); // Converte o conteúdo da planilha para um formato JSON. Cada linha da planilha se torna um objeto JSON.
+    displayExcelPreview(jsonData);
+  },
+  error: function(error) {
+    console.error('Error ao encontrar o arquivo Excel', error);
+}
+})
 }
 
-function displayExcelPreview(data) {
-    const excelPreview = document.getElementById('excelPreview');
-    let table = '<table border="1"><thead><tr>';
+function displayExcelPreview(data) { // mostra os dados que achou, em uma tabela
+const excelPreview = document.getElementById('excelPreview');
+let table = '<table border="1"><thead><tr>';
 
-    const headers = Object.keys(data[0]);
+const headers = Object.keys(data[0]);
+headers.forEach(header => {
+    table += `<th>${header}</th>`;
+});
+
+table += '</tr></thead><tbody>';
+
+data.forEach(row => {
+    table += '<tr>';
     headers.forEach(header => {
-        table += `<th>${header}</th>`;
+        table += `<td>${row[header]}</td>`;
     });
+    table += '</tr>';
+});
 
-    table += '</tr></thead><tbody>';
+table += '</tbody></table>';
+excelPreview.innerHTML = table;
+};
 
-    data.forEach(row => {
-        table += '<tr>';
-        headers.forEach(header => {
-            table += `<td>${row[header]}</td>`;
-        });
-        table += '</tr>';
-    });
+module.exports = {
+fetchExcelFile,
 
-    table += '</tbody></table>';
-    excelPreview.innerHTML = table;
 }
-
-function saveActivity() {
-    $.ajax({
-      url: `${url}/saveExcel`,
-      type: "POST",
-      xhrFields: {
-        responseType: 'blob'
-      },
-      success: function (response, textStatus, xhr) {
-        isSaved = true;
-        var filename = '';
-        var disposition = xhr.getResponseHeader('Content-Disposition');
-        if (disposition && disposition.indexOf('attachment') !== -1) {
-          var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-          var matches = filenameRegex.exec(disposition);
-          if (matches != null && matches[1]) {
-            filename = matches[1].replace(/['"]/g, '');
-          }
-        }
-  
-        saveAs(response, filename || 'arquivo.xlsx')
-      },
-      error: function (xhr, status, error) {
-        console.log(error);
-      },
-    });
-  }

@@ -100,6 +100,29 @@
     font-weight: bold;
     border: none;
     width: 100%;
+    right: 0;
+}
+
+.status_process_area{
+    display: flex;
+}
+
+.status_off{
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+.status_on{
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 50%;
 }
 
 .card-btn{

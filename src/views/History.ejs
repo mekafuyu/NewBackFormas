@@ -46,6 +46,11 @@
         <div class="card-area">
             <% for (const [key, value] of Object.entries(data)) { %>
                 <div class="card" style="border-radius: 10px;" id="processCard">
+                    <div class="status_process_area">
+                        <div class="<%=
+                        value.finished ? "status_off" : "status_on"
+                      %>"></div>
+                    </div>
                     <div class="card-body">
                         <h4 class="card-title">Processo: <%=value.code%></h4>
                         <h6 class="card-text mb-2">Data: <%=value.createdAt.toLocaleDateString("pt-br")%></h6>
