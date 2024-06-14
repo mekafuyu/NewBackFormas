@@ -207,19 +207,17 @@ setInterval(() => {
     url: `${url}/game/getPlayers/${gameCode}`,
     type: "GET",
     success: function (response) {
-      var s = Date.now();
-
-      if (response.size > 0) {
-        finished = Array.from(response.values()).reduce(
+      if (Object.keys(response).length > 0) {
+        finished = Object.values(response).reduce(
           (counter, { done }) => (done === true ? (counter += 1) : counter),
           0
         );
-        ongoing = response.size - finished;
+        ongoing = Object.keys(response).length - finished;
 
         ongoingDiv.text(ongoing);
         finishedDiv.text(finished);
 
-        data.forEach((value, key, map) => {
+        for (const [key, value] of Object.entries(response))  {
           var hasChildWithId =
             competitorsDiv.find("#" + value.code).length > 0;
           if (hasChildWithId) {
@@ -350,7 +348,7 @@ setInterval(() => {
         </div>
           `);
           }
-        })
+        }
       }
     },
     error: function (xhr, status, error) {
@@ -378,7 +376,6 @@ function atualizarTempoRestanteFrontend() {
   const tempoFormatado = `${horas.toString().padStart(2, "0")}:${minutos
     .toString()
     .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
-  console.log(tempoFormatado)
   $("#tempoRestante").text(tempoFormatado);
 }
 
